@@ -148,6 +148,10 @@ def generate_file(project_dir, infile, context, env):
 
     logger.debug('Created file at {0}'.format(outfile))
 
+    if os.path.islink(infile):
+        shutil.copyfile(infile, outfile, follow_symlinks=False)
+        return
+
     # Just copy over binary files. Don't render.
     logger.debug("Check {} to see if it's a binary".format(infile))
     if is_binary(infile):
@@ -325,7 +329,7 @@ def generate_files(repo_dir, context=None, output_dir='.',
                     'Copying dir {} to {} without rendering'
                     ''.format(indir, outdir)
                 )
-                shutil.copytree(indir, outdir)
+                shutil.copytree(indir, outdir, symlinks=True)
 
             # We mutate ``dirs``, because we only want to go through these dirs
             # recursively
